@@ -1,23 +1,27 @@
-
 # taximetro.py
-# Taxímetro CLI - Nivel Esencial
+# Taxímetro CLI - Nivel Esencial (con tarifa inicial de arranque)
 
 import time
 
-# 0.02 € = 2 céntimos por segundo (parado)
-# 0.05 € = 5 céntimos por segundo (en movimiento)
-STOPPED_RATE = 0.02
-MOVING_RATE = 0.05
+# Tarifas por segundo
+STOPPED_RATE = 0.02    # 0.02 € / s (parado)
+MOVING_RATE = 0.05     # 0.05 € / s (en movimiento)
 
-def calculate_fare(seconds_stopped, seconds_moving):
+# Tarifa inicial de arranque (se cobra por inicio de trayecto)
+BASE_FARE = 2.00       # 2 euros
+
+def calculate_fare(seconds_stopped, seconds_moving, base_fare=0.0):
     """
-    Calcula la tarifa total en euros.
-    - seconds_stopped: segundos totales en los que el taxi estuvo parado
-    - seconds_moving: segundos totales en los que el taxi estuvo en movimiento
+    Calcula la tarifa total en euros y devuelve un desglose:
+      - total: suma de base_fare + stopped_cost + moving_cost
+      - stopped_cost: coste por tiempo parado
+      - moving_cost: coste por tiempo en movimiento
+      - base_fare: tarifa de arranque pasada como argumento
     """
-    fare = seconds_stopped * 0.02 + seconds_moving * 0.05
-    # imprimimos el total con 2 decimales al final del trayecto
-    return fare
+    stopped_cost = seconds_stopped * STOPPED_RATE
+    moving_cost = seconds_moving * MOVING_RATE
+    total = base_fare + stopped_cost + moving_cost
+    return total, stopped_cost, moving_cost, base_fare
 
 def taximeter():
     """
@@ -47,7 +51,7 @@ def taximeter():
             moving_time = 0.0
             state = "stopped"  # asumimos que empieza parado
             state_start_time = time.time()
-            print("Trayecto iniciado. Estado inicial: 'stopped' (parado).")
+            print(f"Trayecto iniciado. Estado inicial: 'stopped' (parado). Tarifa de arranque: €{BASE_FARE:.2f} aplicada.")
 
         elif command in ("stop", "move"):
             if not trip_active:
@@ -79,11 +83,16 @@ def taximeter():
             else:
                 moving_time += duration
 
-            total = calculate_fare(stopped_time, moving_time)
+            # calculamos la tarifa incluyendo la tarifa inicial
+            total, stopped_cost, moving_cost, base = calculate_fare(stopped_time, moving_time, base_fare=BASE_FARE)
 
             print("\n--- Resumen del trayecto ---")
+            print(f"Tarifa de arranque: €{base:.2f}")
             print(f"Tiempo parado: {stopped_time:.1f} segundos")
             print(f"Tiempo en movimiento: {moving_time:.1f} segundos")
+            print(f"Coste por tiempo parado: €{stopped_cost:.2f}")
+            print(f"Coste por tiempo en movimiento: €{moving_cost:.2f}")
+            print(f"----------------------------")
             print(f"Total a pagar: €{total:.2f}")
             print("----------------------------\n")
 
@@ -92,7 +101,7 @@ def taximeter():
             state = None
 
         elif command == "exit":
-            print("Good bye!👋")
+            print("¡Hasta luego!👋")
             break
 
         else:
@@ -100,3 +109,4 @@ def taximeter():
 
 if __name__ == "__main__":
     taximeter()
+
