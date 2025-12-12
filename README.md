@@ -31,7 +31,7 @@ Tecnologías a usar
 Python
 Git
 GitHub
-Canva
+
 
 Entregables
 Repositorio de GitHub con el código fuente del proyecto.
@@ -42,3 +42,11 @@ Enlace al tablero Kanban utilizado para la organización del proyecto.
 
 Plazo de Entrega
 Se dispone de 2 semanas para realizar este proyecto. 
+
+
+ANEXO
+Versiones de trabajo del proyecto
+version 1: código y CLI(UI)
+version 2: agregada la tarifa de arranque de 2 €
+version 3: modificación de la CLI(UI) para avisar sobre la existencia de la tarifa de arranque y la tarifa de noche
+
